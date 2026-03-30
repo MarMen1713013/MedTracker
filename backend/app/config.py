@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     secret_key: str = "changeme-use-a-long-random-string"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
+    tz: str = "Europe/Rome"
 
     ntfy_url: Optional[str] = None
     ntfy_topic: str = "medtracker"

@@ -6,6 +6,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-medtracker}
       POSTGRES_USER: ${POSTGRES_USER:-medtracker}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TZ: ${TZ:-Europe/Rome}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -31,6 +32,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-medtracker}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_HOST: db
+      TZ: ${TZ:-Europe/Rome}
     volumes:
       - backups:/backups
     ports:

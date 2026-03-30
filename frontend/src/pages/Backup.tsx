@@ -73,8 +73,8 @@ export function Backup() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.name.endsWith(".sql.gz")) {
-      toast({ variant: "destructive", title: "Errore", description: "Il file deve essere un .sql.gz" });
+    if (!file.name.endsWith(".sql.gz") && !file.name.endsWith(".sql")) {
+      toast({ variant: "destructive", title: "Errore", description: "Il file deve essere un .sql o .sql.gz" });
       return;
     }
     setUploading(true);
@@ -112,7 +112,7 @@ export function Backup() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".sql.gz"
+            accept=".sql,.sql.gz"
             className="hidden"
             onChange={handleUpload}
           />
@@ -196,7 +196,10 @@ export function Backup() {
         <CardContent className="text-sm text-muted-foreground space-y-1">
           <p>• I backup vengono creati automaticamente ogni notte alle 02:00.</p>
           <p>• I file vengono salvati nel volume Docker <code>/backups</code>.</p>
-          <p>• Il ripristino sovrascrive tutti i dati attuali del database.</p>
+          <p>• I backup contengono solo farmaci e giacenze.</p>
+          <p>• L'import accetta file <code>.sql</code> e <code>.sql.gz</code>.</p>
+          <p>• I backup vecchi completi vengono importati estraendo solo farmaci e giacenze.</p>
+          <p>• Il ripristino sovrascrive farmaci e giacenze correnti e svuota le terapie.</p>
         </CardContent>
       </Card>
     </div>

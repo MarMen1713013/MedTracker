@@ -1,7 +1,9 @@
 FROM python:3.12-slim
+ENV TZ=Europe/Rome
 
 RUN apt-get update && apt-get install -y \
     postgresql-client \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

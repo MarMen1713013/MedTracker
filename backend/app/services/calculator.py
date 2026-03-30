@@ -4,48 +4,34 @@ from typing import Optional
 from app import models, schemas
 
 
+def therapy_applies_on_date(therapy: models.Therapy, target_date: date) -> bool:
+    if not therapy.is_active:
+        return False
+    if therapy.start_date > target_date:
+        return False
+    if therapy.end_date is not None and therapy.end_date < target_date:
+        return False
+    return True
+
+
+def therapy_daily_dose(therapy: models.Therapy) -> Decimal:
+    return Decimal(str(therapy.dose_per_intake)) * therapy.intakes_per_day
+
+
 def compute_stock_level(medication: models.Medication) -> schemas.StockLevel:
     today = date.today()
 
-    total_added = sum(
+    remaining = sum(
         Decimal(str(entry.quantity)) for entry in medication.stock_entries
     )
 
-    consumed_to_date = Decimal("0")
     daily_dose = Decimal("0")
     active_therapy_count = 0
 
     for therapy in medication.therapies:
-        dose = Decimal(str(therapy.dose_per_intake))
-        intakes = therapy.intakes_per_day
-        daily = dose * intakes
-
-        # Determine if therapy is currently active (started, not ended, is_active flag)
-        therapy_started = therapy.start_date <= today
-        therapy_ended = therapy.end_date is not None and therapy.end_date < today
-
-        if therapy.is_active and therapy_started and not therapy_ended:
-            daily_dose += daily
+        if therapy_applies_on_date(therapy, today):
+            daily_dose += therapy_daily_dose(therapy)
             active_therapy_count += 1
-
-        # Consumption: only count when is_active=True
-        if not therapy.is_active:
-            continue
-
-        # active_days = days between max(start_date, today_if_future_else_start_date)
-        # and min(today, end_date if set)
-        count_from = max(therapy.start_date, therapy.start_date)  # start_date (future therapies contribute 0)
-        if therapy.start_date > today:
-            # Therapy hasn't started yet — contributes nothing to consumed
-            continue
-
-        count_from = therapy.start_date
-        count_to = min(today, therapy.end_date) if therapy.end_date else today
-
-        active_days = max(0, (count_to - count_from).days)
-        consumed_to_date += daily * active_days
-
-    remaining = total_added - consumed_to_date
 
     days_remaining: Optional[Decimal] = None
     if daily_dose > 0:

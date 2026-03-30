@@ -4,6 +4,7 @@ import sys
 import os
 from pathlib import Path
 from contextlib import asynccontextmanager
+from zoneinfo import ZoneInfo
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +16,7 @@ from app.routers import auth, medications, therapies, stock, backup, settings as
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+APP_TIMEZONE = ZoneInfo(settings.tz)
 
 
 def run_migrations():
@@ -47,29 +49,46 @@ def run_daily_backup():
         logger.error(f"Daily backup failed: {e}")
 
 
-scheduler = BackgroundScheduler()
+def run_daily_therapy_stock_update():
+    from app.services.therapy_stock import backfill_therapy_usage_entries
+    logger.info("Running daily therapy stock update...")
+    created_entries = backfill_therapy_usage_entries()
+    logger.info("Daily therapy stock update complete: %s entries created", created_entries)
+
+
+scheduler = BackgroundScheduler(timezone=APP_TIMEZONE)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
+    run_daily_therapy_stock_update()
 
     scheduler.add_job(
         run_daily_notifications,
-        CronTrigger(hour=settings.notification_hour, minute=0),
+        CronTrigger(hour=settings.notification_hour, minute=0, timezone=APP_TIMEZONE),
         id="daily_notifications",
         replace_existing=True,
     )
     scheduler.add_job(
         run_daily_backup,
-        CronTrigger(hour=settings.backup_cron_hour, minute=0),
+        CronTrigger(hour=settings.backup_cron_hour, minute=0, timezone=APP_TIMEZONE),
         id="daily_backup",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        run_daily_therapy_stock_update,
+        CronTrigger(hour=0, minute=0, timezone=APP_TIMEZONE),
+        id="daily_therapy_stock_update",
         replace_existing=True,
     )
     scheduler.start()
     logger.info(
-        f"Scheduler started. Notifications at {settings.notification_hour}:00, "
-        f"backups at {settings.backup_cron_hour}:00"
+        "Scheduler timezone %s. Notifications at %s:00, backups at %s:00, "
+        "therapy stock updates at 00:00",
+        settings.tz,
+        settings.notification_hour,
+        settings.backup_cron_hour,
     )
 
     yield
