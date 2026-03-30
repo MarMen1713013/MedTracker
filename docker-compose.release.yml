@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-medtracker}
+      POSTGRES_USER: ${POSTGRES_USER:-medtracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TZ: ${TZ:-Europe/Rome}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-medtracker} -d ${POSTGRES_DB:-medtracker}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ${DOCKER_IMAGE:?Set DOCKER_IMAGE, for example tuoutente/medtracker:latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-medtracker}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-medtracker}
+      SECRET_KEY: ${SECRET_KEY:-changeme-use-a-long-random-string}
+      NTFY_URL: ${NTFY_URL:-}
+      NTFY_TOPIC: ${NTFY_TOPIC:-medtracker}
+      NTFY_TOKEN: ${NTFY_TOKEN:-}
+      NOTIFICATION_HOUR: ${NOTIFICATION_HOUR:-8}
+      POSTGRES_DB: ${POSTGRES_DB:-medtracker}
+      POSTGRES_USER: ${POSTGRES_USER:-medtracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: db
+      TZ: ${TZ:-Europe/Rome}
+    volumes:
+      - backups:/backups
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  backups:
