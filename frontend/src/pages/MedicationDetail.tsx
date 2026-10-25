@@ -235,7 +235,10 @@ export function MedicationDetail() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">{medication.name}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-bold">{medication.name}</h1>
+            {medication.dosage && <Badge variant="outline">{medication.dosage}</Badge>}
+          </div>
           {medication.active_ingredient && (
             <p className="text-sm text-muted-foreground">{medication.active_ingredient}</p>
           )}

@@ -14,7 +14,11 @@ def get_stock_levels(
     db: Session = Depends(get_db),
     _: models.User = Depends(get_current_user),
 ):
-    medications = db.query(models.Medication).order_by(models.Medication.name).all()
+    medications = (
+        db.query(models.Medication)
+        .order_by(models.Medication.name, models.Medication.dosage)
+        .all()
+    )
     levels = [compute_stock_level(med) for med in medications]
     # Sort by urgency: medications with active therapies first, sorted by days_remaining asc
     def sort_key(sl: schemas.StockLevel):

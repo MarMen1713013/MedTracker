@@ -14,7 +14,11 @@ def list_medications(
     db: Session = Depends(get_db),
     _: models.User = Depends(get_current_user),
 ):
-    return db.query(models.Medication).order_by(models.Medication.name).all()
+    return (
+        db.query(models.Medication)
+        .order_by(models.Medication.name, models.Medication.dosage)
+        .all()
+    )
 
 
 @router.post("", response_model=schemas.MedicationOut, status_code=201)
