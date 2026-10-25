@@ -49,6 +49,25 @@
   }
 }
 
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body,
+  #root {
+    background: white !important;
+    color: black !important;
+  }
+
+  .therapy-summary-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
