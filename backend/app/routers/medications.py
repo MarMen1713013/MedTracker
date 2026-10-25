@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
 from app.auth import get_current_user
-from app.services.aifa import AifaLookupUnavailable, lookup_active_ingredients
+from app.services.medication_lookup import MedicationLookupUnavailable, lookup_active_ingredients
 
 router = APIRouter(prefix="/api/medications", tags=["medications"])
 
@@ -40,7 +40,7 @@ def lookup_medication_active_ingredient(
 ):
     try:
         return lookup_active_ingredients(name)
-    except AifaLookupUnavailable as exc:
+    except MedicationLookupUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 

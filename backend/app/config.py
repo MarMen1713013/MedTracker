@@ -18,7 +18,11 @@ class Settings(BaseSettings):
     notification_hour: int = 8
 
     aifa_lookup_enabled: bool = True
-    aifa_lists_url: str = "https://www.aifa.gov.it/liste-farmaci-a-h"
+    aifa_search_url: str = "https://api.aifa.gov.it/aifa-bdf-eif-be/1.0.0/formadosaggio/ricerca"
+    aifa_source_url: str = "https://medicinali.aifa.gov.it/"
+    veterinary_lookup_enabled: bool = True
+    veterinary_dataset_url: str = "https://www.dati.salute.gov.it/it/dataset/farmaci-veterinari/"
+    veterinary_source_url: str = "https://www.dati.salute.gov.it/it/dataset/farmaci-veterinari/"
 
     postgres_db: str = "medtracker"
     postgres_user: str = "medtracker"
