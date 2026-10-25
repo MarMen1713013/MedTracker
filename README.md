@@ -1,5 +1,8 @@
 # MedTracker
 
+[![CI](https://github.com/MarMen1713013/MedTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/MarMen1713013/MedTracker/actions/workflows/ci.yml)
+[![Docker release](https://github.com/MarMen1713013/MedTracker/actions/workflows/docker-release.yml/badge.svg)](https://github.com/MarMen1713013/MedTracker/actions/workflows/docker-release.yml)
+
 Applicazione web personale per registrare farmaci, terapie e scorte, con notifiche ntfy e backup PostgreSQL automatici.
 
 > Il progetto gestisce dati sanitari ed è ancora essenziale: usalo con cautela e non esporlo direttamente su Internet senza le protezioni indicate sotto.
@@ -47,7 +50,31 @@ La ricerca del principio attivo interroga online l'anagrafica AIFA completa per 
 Per usare un'immagine già pubblicata:
 
 ```bash
-DOCKER_IMAGE=tuoutente/medtracker:latest docker compose -f docker-compose.release.yml up -d
+DOCKER_IMAGE=marmen1713013/medtracker:latest docker compose -f docker-compose.release.yml up -d
+```
+
+## CI e pubblicazione su Docker Hub
+
+La workflow **CI** parte a ogni push su `master` e a ogni pull request. Esegue i test backend, compila il frontend e costruisce l'immagine Docker senza pubblicarla. Il badge in cima al README mostra l'esito dell'ultima esecuzione sul branch principale.
+
+La workflow **Docker release** parte solo quando viene pubblicato un tag stabile nel formato `vMAJOR.MINOR.PATCH`, per esempio `v1.2.0`. Prima richiama l'intera CI; soltanto se tutti i controlli passano costruisce l'immagine per `linux/amd64` e `linux/arm64` e la invia a `marmen1713013/medtracker` con questi tag:
+
+- il tag Git completo, per esempio `v1.2.0`;
+- gli alias di serie, per esempio `1.2` e `1`;
+- `latest`.
+
+Per autorizzare la pubblicazione, configura in **GitHub > repository MedTracker > Settings > Secrets and variables > Actions**:
+
+- la variabile `DOCKERHUB_USERNAME` con valore `marmen1713013`;
+- il secret `DOCKERHUB_TOKEN` con un personal access token Docker Hub dotato di permesso di lettura e scrittura.
+
+Il token Docker Hub è necessario anche se l'account Docker Hub usa GitHub per il login: non va usata né salvata la password dell'account. La workflow può anche essere avviata manualmente dalla scheda **Actions**, indicando un tag già esistente; questa modalità è pensata per recuperare o ripetere una pubblicazione, senza compilare codice diverso da quello puntato dal tag.
+
+Per una nuova release:
+
+```bash
+git tag -a v1.2.0 -m "MedTracker v1.2.0"
+git push origin v1.2.0
 ```
 
 L'architettura di deploy attuale (un container applicativo più PostgreSQL) resta adatta a un'installazione personale e a singola istanza. Non aumentare le repliche del container `app`: lo scheduler è incorporato nel processo e più repliche eseguirebbero backup, consumo terapie e notifiche più volte. Per scalare, i job andrebbero separati in un worker dedicato.
