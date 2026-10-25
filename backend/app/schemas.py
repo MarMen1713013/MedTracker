@@ -156,4 +156,5 @@ class BackupFile(BaseModel):
 class ActiveIngredientSuggestion(BaseModel):
     active_ingredient: str
     product_name: str
+    source_name: str
     source_url: str

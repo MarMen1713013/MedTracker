@@ -89,14 +89,14 @@ export function Medications() {
       setIngredientSuggestions(resp.data);
       if (resp.data.length === 0) {
         toast({
-          title: "Nessuna corrispondenza AIFA",
+          title: "Nessuna corrispondenza negli archivi ufficiali",
           description: "Puoi inserire il principio attivo manualmente.",
         });
       }
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Ricerca AIFA non disponibile",
+        title: "Ricerca online non disponibile",
         description: err.response?.data?.detail ?? "Inserisci il principio attivo manualmente.",
       });
     } finally {
@@ -263,32 +263,42 @@ export function Medications() {
                   variant="outline"
                   onClick={handleIngredientLookup}
                   disabled={lookingUpIngredient || form.name.trim().length < 2}
-                  title="Cerca negli elenchi ufficiali AIFA"
+                  title="Cerca negli archivi ufficiali"
                 >
                   {lookingUpIngredient ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Search className="h-4 w-4" />
                   )}
-                  <span className="sr-only">Cerca su AIFA</span>
+                  <span className="sr-only">Cerca negli archivi ufficiali</span>
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Puoi compilarlo manualmente o cercarlo negli elenchi{" "}
+                Puoi compilarlo manualmente o cercarlo su{" "}
                 <a
-                  href="https://www.aifa.gov.it/liste-farmaci-a-h"
+                  href="https://medicinali.aifa.gov.it/"
                   target="_blank"
                   rel="noreferrer"
                   className="underline"
                 >
-                  AIFA di classe A e H
-                </a>.
+                  AIFA
+                </a>{" "}
+                per i medicinali umani e nel{" "}
+                <a
+                  href="https://www.dati.salute.gov.it/it/dataset/farmaci-veterinari/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
+                >
+                  Ministero della Salute
+                </a>{" "}
+                per quelli veterinari.
               </p>
               {ingredientSuggestions.length > 0 && (
                 <div className="max-h-36 overflow-auto rounded-md border p-1 space-y-1">
                   {ingredientSuggestions.map((suggestion) => (
                     <button
-                      key={`${suggestion.product_name}-${suggestion.active_ingredient}`}
+                      key={`${suggestion.source_name}-${suggestion.product_name}-${suggestion.active_ingredient}`}
                       type="button"
                       className="w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
                       onClick={() => {
@@ -297,7 +307,9 @@ export function Medications() {
                       }}
                     >
                       <span className="font-medium">{suggestion.active_ingredient}</span>
-                      <span className="block text-xs text-muted-foreground">{suggestion.product_name}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        {suggestion.product_name} · {suggestion.source_name}
+                      </span>
                     </button>
                   ))}
                 </div>

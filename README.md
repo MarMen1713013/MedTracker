@@ -31,11 +31,12 @@ Il primo utente registrato diventa amministratore. I dati PostgreSQL e i backup 
 | `NOTIFICATION_HOUR` | `8` | Ora del controllo ntfy |
 | `BACKUP_CRON_HOUR` | `2` | Ora del backup giornaliero |
 | `BACKUP_RETENTION_DAYS` | `30` | Retention iniziale; `0` disabilita la pulizia |
-| `AIFA_LOOKUP_ENABLED` | `true` | Abilita la ricerca del principio attivo negli elenchi AIFA |
+| `AIFA_LOOKUP_ENABLED` | `true` | Abilita la ricerca online dei medicinali umani AIFA |
+| `VETERINARY_LOOKUP_ENABLED` | `true` | Abilita la ricerca nell'archivio veterinario del Ministero della Salute |
 
 La retention può essere modificata anche dall'interfaccia **Impostazioni**. Il valore salvato nel database prevale sulla variabile d'ambiente, viene letto a ogni esecuzione giornaliera e non richiede un riavvio. La pulizia conserva sempre il backup più recente.
 
-La ricerca AIFA consulta gli elenchi ufficiali dei farmaci di classe A e H e mantiene una cache in memoria per 24 ore. Richiede accesso HTTPS in uscita verso `www.aifa.gov.it`; se il servizio non è disponibile, il principio attivo resta compilabile manualmente.
+La ricerca del principio attivo interroga online l'anagrafica AIFA completa per i medicinali umani, incluse le classi C e OTC, e l'open data giornaliero del Ministero della Salute per i medicinali veterinari. L'archivio veterinario viene mantenuto in memoria per 24 ore; al primo utilizzo il download può richiedere qualche secondo. Il container deve poter raggiungere via HTTPS `api.aifa.gov.it` e `www.dati.salute.gov.it`. Se una fonte non è disponibile, le altre continuano a funzionare e il principio attivo resta sempre compilabile manualmente.
 
 ## Immagine di release
 

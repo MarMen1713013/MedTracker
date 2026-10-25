@@ -89,6 +89,7 @@ export interface BackupFile {
 export interface ActiveIngredientSuggestion {
   active_ingredient: string;
   product_name: string;
+  source_name: string;
   source_url: string;
 }
 
