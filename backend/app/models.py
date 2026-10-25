@@ -22,6 +22,7 @@ class Medication(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
+    active_ingredient = Column(String(500), nullable=True)
     unit = Column(String(50), nullable=False)
     notification_threshold_days = Column(Integer, default=10, nullable=False)
     notes = Column(Text, nullable=True)

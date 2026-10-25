@@ -194,7 +194,8 @@ export function Backup() {
           <CardTitle className="text-sm font-medium text-muted-foreground">Note</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-1">
-          <p>• I backup vengono creati automaticamente ogni notte alle 02:00.</p>
+          <p>• I backup vengono creati automaticamente ogni giorno all'ora configurata nel deploy.</p>
+          <p>• La retention configurata nelle Impostazioni viene applicata giornalmente; il file più recente è sempre conservato.</p>
           <p>• I file vengono salvati nel volume Docker <code>/backups</code>.</p>
           <p>• I backup contengono solo farmaci e giacenze.</p>
           <p>• L'import accetta file <code>.sql</code> e <code>.sql.gz</code>.</p>

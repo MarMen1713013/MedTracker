@@ -1,9 +1,10 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
 from app.auth import get_current_user
+from app.services.aifa import AifaLookupUnavailable, lookup_active_ingredients
 
 router = APIRouter(prefix="/api/medications", tags=["medications"])
 
@@ -27,6 +28,20 @@ def create_medication(
     db.commit()
     db.refresh(med)
     return med
+
+
+@router.get(
+    "/active-ingredients/lookup",
+    response_model=List[schemas.ActiveIngredientSuggestion],
+)
+def lookup_medication_active_ingredient(
+    name: str = Query(..., min_length=2, max_length=255),
+    _: models.User = Depends(get_current_user),
+):
+    try:
+        return lookup_active_ingredients(name)
+    except AifaLookupUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/{medication_id}", response_model=schemas.MedicationOut)

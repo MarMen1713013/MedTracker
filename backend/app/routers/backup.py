@@ -1,14 +1,14 @@
 import os
 import gzip
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
 from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from app.database import get_db
+from app.database import SessionLocal, get_db
 from app import models, schemas
 from app.auth import get_current_user
 from app.config import settings
@@ -45,9 +45,9 @@ def _parse_backup_timestamp(path: Path) -> datetime:
     elif stem.startswith("medtracker_"):
         stem = stem.replace("medtracker_", "", 1)
     try:
-        return datetime.strptime(stem, "%Y%m%d_%H%M%S")
+        return datetime.strptime(stem, "%Y%m%d_%H%M%S").replace(tzinfo=APP_TIMEZONE)
     except ValueError:
-        return datetime.fromtimestamp(stat.st_mtime)
+        return datetime.fromtimestamp(stat.st_mtime, tz=APP_TIMEZONE)
 
 
 def _sanitize_restore_sql(raw: str) -> bytes:
@@ -164,6 +164,57 @@ def create_backup() -> str:
         gz_file.write(result.stdout)
 
     return filename
+
+
+def get_backup_retention_days() -> int:
+    db = SessionLocal()
+    try:
+        configured = (
+            db.query(models.Setting)
+            .filter(models.Setting.key == "backup_retention_days")
+            .first()
+        )
+        if configured and configured.value is not None:
+            try:
+                value = int(configured.value)
+                if 0 <= value <= 3650:
+                    return value
+            except ValueError:
+                pass
+        return max(0, min(settings.backup_retention_days, 3650))
+    finally:
+        db.close()
+
+
+def prune_expired_backups(
+    retention_days: int,
+    now: datetime | None = None,
+) -> List[str]:
+    """Delete expired backup files while always preserving the newest one."""
+    if retention_days <= 0:
+        return []
+
+    _ensure_backup_dir()
+    paths = [
+        path
+        for path in BACKUP_DIR.iterdir()
+        if path.is_file() and _is_supported_backup_name(path.name)
+    ]
+    if not paths:
+        return []
+
+    reference_time = now or datetime.now(APP_TIMEZONE)
+    if reference_time.tzinfo is None:
+        reference_time = reference_time.replace(tzinfo=APP_TIMEZONE)
+    cutoff = reference_time - timedelta(days=retention_days)
+    newest = max(paths, key=_parse_backup_timestamp)
+
+    deleted = []
+    for path in paths:
+        if path != newest and _parse_backup_timestamp(path) < cutoff:
+            path.unlink()
+            deleted.append(path.name)
+    return sorted(deleted)
 
 
 @router.get("", response_model=List[schemas.BackupFile])

@@ -51,7 +51,14 @@ export function MedicationCard({ level }: MedicationCardProps) {
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-lg leading-tight">{medication.name}</CardTitle>
+          <div className="min-w-0">
+            <CardTitle className="text-lg leading-tight">{medication.name}</CardTitle>
+            {medication.active_ingredient && (
+              <p className="mt-0.5 truncate text-xs font-normal text-muted-foreground">
+                {medication.active_ingredient}
+              </p>
+            )}
+          </div>
           <Badge variant={badge} className="shrink-0 mt-0.5">{label}</Badge>
         </div>
       </CardHeader>

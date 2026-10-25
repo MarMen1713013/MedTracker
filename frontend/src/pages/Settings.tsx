@@ -12,6 +12,7 @@ export function SettingsPage() {
     ntfy_url: "",
     ntfy_topic: "medtracker",
     notification_hour: "8",
+    backup_retention_days: "30",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,6 +42,7 @@ export function SettingsPage() {
         settingsApi.update("ntfy_url", settings.ntfy_url || null),
         settingsApi.update("ntfy_topic", settings.ntfy_topic || "medtracker"),
         settingsApi.update("notification_hour", settings.notification_hour || "8"),
+        settingsApi.update("backup_retention_days", settings.backup_retention_days || "30"),
       ]);
       toast({ title: "Impostazioni salvate" });
     } catch {
@@ -102,6 +104,35 @@ export function SettingsPage() {
                 </p>
               </div>
             </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Retention backup</CardTitle>
+          <CardDescription>
+            Elimina automaticamente i backup scaduti dopo il backup giornaliero.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-muted-foreground text-sm">Caricamento...</div>
+          ) : (
+            <div className="space-y-2">
+              <Label htmlFor="backup_retention_days">Giorni di conservazione (0–3650)</Label>
+              <Input
+                id="backup_retention_days"
+                type="number"
+                min={0}
+                max={3650}
+                value={settings.backup_retention_days}
+                onChange={(e) => setSettings({ ...settings, backup_retention_days: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground">
+                Usa 0 per disabilitare la rimozione automatica. Il backup più recente viene sempre conservato.
+              </p>
+            </div>
           )}
         </CardContent>
       </Card>

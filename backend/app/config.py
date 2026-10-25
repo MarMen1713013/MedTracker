@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     ntfy_token: Optional[str] = None
 
     backup_cron_hour: int = 2
+    backup_retention_days: int = 30
     notification_hour: int = 8
+
+    aifa_lookup_enabled: bool = True
+    aifa_lists_url: str = "https://www.aifa.gov.it/liste-farmaci-a-h"
 
     postgres_db: str = "medtracker"
     postgres_user: str = "medtracker"
