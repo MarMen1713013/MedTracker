@@ -62,7 +62,7 @@
     color: black !important;
   }
 
-  .therapy-summary-item {
+  .print-summary-item {
     break-inside: avoid;
     page-break-inside: avoid;
   }
