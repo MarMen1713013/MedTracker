@@ -7,6 +7,7 @@ import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { Medications } from "@/pages/Medications";
 import { MedicationDetail } from "@/pages/MedicationDetail";
+import { TherapySummary } from "@/pages/TherapySummary";
 import { Backup } from "@/pages/Backup";
 import { SettingsPage } from "@/pages/Settings";
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/medications" element={<Medications />} />
             <Route path="/medications/:id" element={<MedicationDetail />} />
+            <Route path="/therapies/summary" element={<TherapySummary />} />
             <Route path="/backup" element={<Backup />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
