@@ -51,6 +51,7 @@ def check_and_notify():
 
         for med in medications:
             level = compute_stock_level(med)
+            medication_label = " ".join(part for part in (med.name, med.dosage) if part)
 
             if level.days_remaining is None:
                 continue  # No active therapy
@@ -61,24 +62,24 @@ def check_and_notify():
             if days > threshold:
                 continue  # Plenty of stock
 
-            title = f"MedTracker: {med.name}"
+            title = f"MedTracker: {medication_label}"
 
             if days <= 0:
                 elapsed = abs(int(days))
                 if elapsed == 0:
-                    message = f"Finisce oggi ({med.name})"
+                    message = f"Finisce oggi ({medication_label})"
                 else:
-                    message = f"Finito da {elapsed} giorni ({med.name})"
+                    message = f"Finito da {elapsed} giorni ({medication_label})"
             elif days <= 1:
-                message = f"Finisce oggi — meno di 1 giorno rimasto ({med.name})"
+                message = f"Finisce oggi — meno di 1 giorno rimasto ({medication_label})"
             else:
-                message = f"Scorte per {int(days)} giorni ({med.name})"
+                message = f"Scorte per {int(days)} giorni ({medication_label})"
 
             sent = send_ntfy_notification(ntfy_topic, title, message, ntfy_url)
             if sent:
-                logger.info(f"Notification sent for {med.name}: {message}")
+                logger.info(f"Notification sent for {medication_label}: {message}")
             else:
-                logger.warning(f"Failed to send notification for {med.name}")
+                logger.warning(f"Failed to send notification for {medication_label}")
     except Exception as e:
         logger.error(f"Error in check_and_notify: {e}")
     finally:

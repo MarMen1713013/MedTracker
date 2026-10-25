@@ -41,6 +41,7 @@ export interface Medication {
   id: number;
   name: string;
   active_ingredient: string | null;
+  dosage: string | null;
   unit: string;
   notification_threshold_days: number;
   notes: string | null;

@@ -36,6 +36,7 @@ class LoginRequest(BaseModel):
 class MedicationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     active_ingredient: Optional[str] = Field(None, max_length=500)
+    dosage: Optional[str] = Field(None, max_length=100)
     unit: str = Field(..., min_length=1, max_length=50)
     notification_threshold_days: int = Field(default=10, ge=1)
     notes: Optional[str] = None
@@ -44,6 +45,7 @@ class MedicationCreate(BaseModel):
 class MedicationUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     active_ingredient: Optional[str] = Field(None, max_length=500)
+    dosage: Optional[str] = Field(None, max_length=100)
     unit: Optional[str] = Field(None, min_length=1, max_length=50)
     notification_threshold_days: Optional[int] = Field(None, ge=1)
     notes: Optional[str] = None
@@ -53,6 +55,7 @@ class MedicationOut(BaseModel):
     id: int
     name: str
     active_ingredient: Optional[str]
+    dosage: Optional[str]
     unit: str
     notification_threshold_days: int
     notes: Optional[str]

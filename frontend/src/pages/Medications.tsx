@@ -17,6 +17,7 @@ import { toast } from "@/components/ui/use-toast";
 interface MedFormData {
   name: string;
   active_ingredient: string;
+  dosage: string;
   unit: string;
   notification_threshold_days: number;
   notes: string;
@@ -25,6 +26,7 @@ interface MedFormData {
 const emptyForm: MedFormData = {
   name: "",
   active_ingredient: "",
+  dosage: "",
   unit: "compresse",
   notification_threshold_days: 10,
   notes: "",
@@ -68,6 +70,7 @@ export function Medications() {
     setForm({
       name: med.name,
       active_ingredient: med.active_ingredient ?? "",
+      dosage: med.dosage ?? "",
       unit: med.unit,
       notification_threshold_days: med.notification_threshold_days,
       notes: med.notes ?? "",
@@ -110,6 +113,7 @@ export function Medications() {
       const data = {
         ...form,
         active_ingredient: form.active_ingredient.trim() || null,
+        dosage: form.dosage.trim() || null,
         notes: form.notes || null,
       };
       if (editing) {
@@ -130,7 +134,8 @@ export function Medications() {
 
   const handleDelete = async (med: Medication, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm(`Eliminare "${med.name}"? Verranno eliminati anche tutte le terapie e le scorte.`)) return;
+    const medicationLabel = [med.name, med.dosage].filter(Boolean).join(" ");
+    if (!confirm(`Eliminare "${medicationLabel}"? Verranno eliminati anche tutte le terapie e le scorte.`)) return;
     try {
       await medicationsApi.delete(med.id);
       toast({ title: "Farmaco eliminato" });
@@ -168,8 +173,10 @@ export function Medications() {
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{med.name}</p>
-                  {med.active_ingredient && (
-                    <p className="text-xs text-muted-foreground truncate">{med.active_ingredient}</p>
+                  {(med.dosage || med.active_ingredient) && (
+                    <p className="truncate text-xs text-muted-foreground">
+                      {[med.dosage, med.active_ingredient].filter(Boolean).join(" · ")}
+                    </p>
                   )}
                   <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
                     <span>{med.unit}</span>
@@ -199,6 +206,7 @@ export function Medications() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nome</TableHead>
+                    <TableHead>Dosaggio</TableHead>
                     <TableHead>Principio attivo</TableHead>
                     <TableHead>Unità</TableHead>
                     <TableHead>Soglia notifica</TableHead>
@@ -209,6 +217,7 @@ export function Medications() {
                   {medications.map((med) => (
                     <TableRow key={med.id} className="cursor-pointer" onClick={() => navigate(`/medications/${med.id}`)}>
                       <TableCell className="font-medium">{med.name}</TableCell>
+                      <TableCell>{med.dosage ?? "—"}</TableCell>
                       <TableCell>{med.active_ingredient ?? "—"}</TableCell>
                       <TableCell>{med.unit}</TableCell>
                       <TableCell>{med.notification_threshold_days} giorni</TableCell>
@@ -249,6 +258,15 @@ export function Medications() {
                   setIngredientSuggestions([]);
                 }}
                 placeholder="es. Tachipirina"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Dosaggio / concentrazione (opzionale)</Label>
+              <Input
+                value={form.dosage}
+                onChange={(e) => setForm({ ...form, dosage: e.target.value })}
+                placeholder="es. 1000 mg oppure 5 mg/ml"
+                maxLength={100}
               />
             </div>
             <div className="space-y-2">

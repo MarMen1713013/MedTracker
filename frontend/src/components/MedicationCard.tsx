@@ -53,6 +53,9 @@ export function MedicationCard({ level }: MedicationCardProps) {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <CardTitle className="text-lg leading-tight">{medication.name}</CardTitle>
+            {medication.dosage && (
+              <p className="mt-0.5 text-sm font-medium text-foreground/80">{medication.dosage}</p>
+            )}
             {medication.active_ingredient && (
               <p className="mt-0.5 truncate text-xs font-normal text-muted-foreground">
                 {medication.active_ingredient}

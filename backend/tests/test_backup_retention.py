@@ -68,6 +68,18 @@ COPY public.users (id, username) FROM stdin;
         self.assertIn("Farmaco legacy", sanitized)
         self.assertNotIn("COPY public.users", sanitized)
 
+    def test_medication_copy_with_dosage_is_kept_for_restore(self):
+        current_dump = """\
+COPY public.medications (id, name, unit, notification_threshold_days, notes, created_at, active_ingredient, dosage) FROM stdin;
+1\tTachipirina\tcompresse\t10\t\\N\t2026-10-25 00:00:00\tParacetamolo\t1000 mg
+\\.
+"""
+
+        sanitized = backup._sanitize_restore_sql(current_dump).decode()
+
+        self.assertIn("active_ingredient, dosage", sanitized)
+        self.assertIn("Paracetamolo\t1000 mg", sanitized)
+
 
 if __name__ == "__main__":
     unittest.main()

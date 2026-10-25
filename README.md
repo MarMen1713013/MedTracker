@@ -20,6 +20,8 @@ Il primo utente registrato diventa amministratore. I dati PostgreSQL e i backup 
 
 Dalla **Dashboard**, il pulsante **Stampa riepilogo** permette di scegliere se includere le terapie attive dell'utente corrente, la disponibilità attuale dei farmaci oppure entrambe. La scelta apre un'anteprima che può essere stampata o salvata in PDF tramite la finestra di stampa del browser.
 
+Ogni medicinale può avere un **dosaggio o una concentrazione** opzionale, per esempio `1000 mg` oppure `5 mg/ml`, separato dal nome e dal principio attivo. I nomi già presenti non vengono modificati automaticamente: valori come “Tachipirina 1000” possono essere sistemati manualmente dalla modifica del medicinale.
+
 ## Configurazione
 
 | Variabile | Default | Uso |

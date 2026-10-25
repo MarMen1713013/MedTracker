@@ -223,6 +223,9 @@ export function PrintSummary() {
                             </div>
                             <div>
                               <h3 className="text-lg font-semibold">{medication.name}</h3>
+                              {medication.dosage && (
+                                <p className="text-sm font-medium">Dosaggio: {medication.dosage}</p>
+                              )}
                               {medication.active_ingredient && (
                                 <p className="mt-0.5 text-sm text-muted-foreground print:text-gray-700">
                                   Principio attivo: {medication.active_ingredient}
@@ -281,9 +284,11 @@ export function PrintSummary() {
                           >
                             <div>
                               <h3 className="font-semibold">{level.medication.name}</h3>
-                              {level.medication.active_ingredient && (
+                              {(level.medication.dosage || level.medication.active_ingredient) && (
                                 <p className="text-xs text-muted-foreground print:text-gray-700">
-                                  {level.medication.active_ingredient}
+                                  {[level.medication.dosage, level.medication.active_ingredient]
+                                    .filter(Boolean)
+                                    .join(" · ")}
                                 </p>
                               )}
                             </div>
