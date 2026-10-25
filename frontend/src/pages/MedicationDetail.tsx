@@ -234,7 +234,12 @@ export function MedicationDetail() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">{medication.name}</h1>
+        <div>
+          <h1 className="text-2xl font-bold">{medication.name}</h1>
+          {medication.active_ingredient && (
+            <p className="text-sm text-muted-foreground">{medication.active_ingredient}</p>
+          )}
+        </div>
         <Badge variant="secondary">{medication.unit}</Badge>
       </div>
 

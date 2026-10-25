@@ -40,13 +40,27 @@ def run_daily_notifications():
 
 
 def run_daily_backup():
-    from app.routers.backup import create_backup
+    from app.routers.backup import (
+        create_backup,
+        get_backup_retention_days,
+        prune_expired_backups,
+    )
     logger.info("Running daily backup...")
     try:
         filename = create_backup()
         logger.info(f"Daily backup created: {filename}")
     except Exception as e:
         logger.error(f"Daily backup failed: {e}")
+    try:
+        retention_days = get_backup_retention_days()
+        deleted = prune_expired_backups(retention_days)
+        logger.info(
+            "Daily backup retention complete: policy=%s days, deleted=%s",
+            retention_days,
+            len(deleted),
+        )
+    except Exception as e:
+        logger.error(f"Daily backup retention failed: {e}")
 
 
 def run_daily_therapy_stock_update():

@@ -40,6 +40,7 @@ export interface Token {
 export interface Medication {
   id: number;
   name: string;
+  active_ingredient: string | null;
   unit: string;
   notification_threshold_days: number;
   notes: string | null;
@@ -85,6 +86,12 @@ export interface BackupFile {
   created_at: string;
 }
 
+export interface ActiveIngredientSuggestion {
+  active_ingredient: string;
+  product_name: string;
+  source_url: string;
+}
+
 // ── Auth ──────────────────────────────────────────────────────────────────
 
 export const authApi = {
@@ -100,6 +107,10 @@ export const authApi = {
 export const medicationsApi = {
   list: () => api.get<Medication[]>("/medications"),
   get: (id: number) => api.get<Medication>(`/medications/${id}`),
+  lookupActiveIngredients: (name: string) =>
+    api.get<ActiveIngredientSuggestion[]>("/medications/active-ingredients/lookup", {
+      params: { name },
+    }),
   create: (data: Omit<Medication, "id" | "created_at">) =>
     api.post<Medication>("/medications", data),
   update: (id: number, data: Partial<Omit<Medication, "id" | "created_at">>) =>
