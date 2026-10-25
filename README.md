@@ -18,7 +18,7 @@ Applicazione web personale per registrare farmaci, terapie e scorte, con notific
 
 Il primo utente registrato diventa amministratore. I dati PostgreSQL e i backup sono persistiti rispettivamente nei volumi `postgres_data` e `backups`.
 
-Dalla pagina **Farmaci**, il pulsante **Riepilogo PDF** apre una vista con le sole terapie attive dell'utente corrente alla data odierna. La vista può essere stampata oppure salvata in PDF tramite la finestra di stampa del browser.
+Dalla **Dashboard**, il pulsante **Stampa riepilogo** permette di scegliere se includere le terapie attive dell'utente corrente, la disponibilità attuale dei farmaci oppure entrambe. La scelta apre un'anteprima che può essere stampata o salvata in PDF tramite la finestra di stampa del browser.
 
 ## Configurazione
 

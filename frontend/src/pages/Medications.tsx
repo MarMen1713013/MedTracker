@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Pencil, Trash2, ChevronRight, Bell, Loader2, Search, Printer } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronRight, Bell, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -146,18 +146,12 @@ export function Medications() {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Farmaci</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate("/therapies/summary")}>
-            <Printer className="mr-2 h-4 w-4" />
-            Riepilogo PDF
-          </Button>
-          <Button onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" />
-            Aggiungi
-          </Button>
-        </div>
+        <Button onClick={openAdd}>
+          <Plus className="mr-2 h-4 w-4" />
+          Aggiungi
+        </Button>
       </div>
 
       {loading ? (
